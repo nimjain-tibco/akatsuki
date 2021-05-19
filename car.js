@@ -8,6 +8,7 @@ class Car {
         this.wheelA;
         this.wheelB;
         this.maxVelocityX = 3;
+        Composite.add(world, this.body);
     }
 
     createCarComposite(xx, yy, width, height, wheelRadius) {

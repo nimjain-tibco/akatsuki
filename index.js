@@ -39,11 +39,9 @@ function setup() {
     Runner.run(runner, engine);
 
 
-    ground = Bodies.rectangle(getX(0, config.canvas.width), (config.canvas.height - 400), config.canvas.width, 25, { isStatic: true });
-
+    ground = new Ground(getX(0, config.canvas.width), (config.canvas.height - 100),
+        config.canvas.width, 50);
     car = new Car(getX(100, 200), 300, 200, 80, 40);
-
-    Composite.add(world, [ground, car.body]);
 
     // fit the render viewport to the scene
     Render.lookAt(render, {
