@@ -5,6 +5,7 @@ class Car {
         this.w = w;
         this.h = h;
         this.body = this.createCarComposite(x, y, w, h, wheelRadius);
+        //this.body.label = 'car';
         this.wheelA;
         this.wheelB;
         this.maxVelocityX = 3;
@@ -22,7 +23,7 @@ class Car {
             wheelBOffset = width * 0.5 - wheelRadius,
             wheelYOffset = height - height * 0.5;
 
-        var car = Composite.create({ label: 'Car' }),
+        var car = Composite.create({ label: 'car' }),
             body = Bodies.rectangle(xx, yy, width, height, {
                 collisionFilter: {
                     group: group
@@ -33,12 +34,15 @@ class Car {
                 density: 0.0002
             });
 
+            body.label = 'car-body';
+
         this.wheelA = Bodies.circle(xx + wheelAOffset, yy + wheelYOffset, wheelRadius, {
             collisionFilter: {
                 group: group
             },
             friction: 0.8
         });
+            this.wheelA.label = 'car-wheelA';
 
         this.wheelB = Bodies.circle(xx + wheelBOffset, yy + wheelYOffset, wheelRadius, {
             collisionFilter: {
@@ -46,6 +50,8 @@ class Car {
             },
             friction: 0.8
         });
+        
+        this.wheelB.label = 'car-wheelB';
 
         var axelA = Constraint.create({
             bodyB: body,
@@ -71,12 +77,28 @@ class Car {
         return car;
     }
 
+    detectCollision(event){
+        var pair = event.pairs;
+        for (var i = 0; i < pair.length; i++) {
+            var aElm = pair[i].bodyA
+            var bElm = pair[i].bodyB
+            if (aElm.label.startsWith('car') || bElm.label.startsWith('car')) {
+                return true
+            }
+            else{
+                return false
+            }
+        }
+         
+    }
+
     move(direction) {
         switch (direction) {
             case "LEFT":
                 Matter.Composite.translate(this.body, { x: -this.maxVelocityX, y: 0 })
                 Matter.Body.rotate(this.wheelA, -Math.PI / 36);
                 Matter.Body.rotate(this.wheelB, -Math.PI / 36);
+                
                 break;
             case "RIGHT":
                 Matter.Composite.translate(this.body, { x: this.maxVelocityX, y: 0 })
@@ -85,4 +107,10 @@ class Car {
                 break;
         }
     }
+
+    getPosition(){
+        console.log('getting car position')
+        return(this.body.bodies[0].position.x)
+    }
+
 }
