@@ -11,7 +11,7 @@ var Engine = Matter.Engine,
     Bodies = Matter.Bodies;
 
 
-var engine, render, world, runner, ground, car, passenger, collisionCount=true;
+var engine, render, world, runner, ground, car, passenger, collisionCount=true, passengerCount=0;
 
 function setup() {
     noCanvas();
@@ -55,28 +55,46 @@ function setup() {
 
 
     Events.on(engine, 'collisionStart', function(event) {
-        if (collisionCount){
-            console.log(event)
-            collisionCount=false
-        }
 
         if (car.detectCollision(event) && passenger.detectCollision(event) ){
             console.log('collision start')
-            // remove passenger
+            // remove passenger if passengerCount is not equal to 3
+            if (passengerCount != 3){
                 console.log('removing passenger')
-                passenger.removePassenger()               
-                  
+                passenger.removePassenger()
+                passengerCount+=1
+            }
+            else{
+                console.log('Taxi full. No more passengers allowed. Please drop existing passengers first')
+            }
+
         }
 });
 }
 
 function keyPressed(){
+    // // display passengers upon SPACEBAR key press
      if (keyIsDown(32)) {
         console.log("SPACE")
         getCarPositionX = car.getPosition()
         passenger = new Passenger(getCarPositionX + 500,450,100,100);
         passenger.show()       
         return true
+    }
+    // drop passengers upon DOWN_ARROW key press
+    else if (keyIsDown(DOWN_ARROW)) {
+        console.log("dropping passenger")
+        // check if passenger exists and display passeneger on screen for 2 seconds and disappear after wards. 
+        if (passengerCount>0){
+            passengerCount-=1
+            passenger = new Passenger(getCarPositionX + 100,450,100,100);
+            passenger.show()
+            setTimeout(() => {  passenger.removePassenger(); }, 2000);
+        }
+        else{
+            console.log('no passengers found in taxi')
+        }
+        
     }
 }
 
