@@ -74,6 +74,21 @@ class Car {
         Composite.addConstraint(this.composite, axelB);
     }
 
+    detectCollision(event){
+        var pair = event.pairs;
+        for (var i = 0; i < pair.length; i++) {
+            var aElm = pair[i].bodyA
+            var bElm = pair[i].bodyB
+            if (aElm.label.startsWith('car') || bElm.label.startsWith('car')) {
+                return true
+            }
+            else{
+                return false
+            }
+        }
+         
+    }
+
     move(direction) {
         switch (direction) {
             case "LEFT":
@@ -88,4 +103,10 @@ class Car {
                 break;
         }
     }
+
+    getPosition(){
+        console.log('getting car position')
+        return(this.body.position.x)
+    }
+
 }

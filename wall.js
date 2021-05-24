@@ -8,6 +8,8 @@ class Wall {
             isStatic: true
         }
         this.body = Bodies.rectangle(x, y, w, h, options);
+        this.body.label = 'ground';
+
         Composite.add(world, this.body);
     }
 }

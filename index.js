@@ -1,11 +1,14 @@
 var Engine = Matter.Engine,
     Render = Matter.Render,
     Runner = Matter.Runner,
+    World = Matter.World,
     Composites = Matter.Composites,
     MouseConstraint = Matter.MouseConstraint,
     Mouse = Matter.Mouse,
     Composite = Matter.Composite,
-    Body = Matter.Body,
+    Body = Matter.Body;
+
+var passenger, collisionCount=true, passengerCount=0,
     Svg = Matter.Svg,
     Common = Matter.Common,
     Bounds = Matter.Bounds,
@@ -68,6 +71,50 @@ function setup() {
         min: { x: 0, y: 0 },
         max: { x: config.canvas.width, y: config.canvas.height }
     });
+
+
+    Events.on(engine, 'collisionStart', function(event) {
+
+        if (car && passenger && car.detectCollision(event) && passenger.detectCollision(event) ){
+            console.log('collision start')
+            // remove passenger if passengerCount is not equal to 3
+            if (passengerCount != 3){
+                console.log('removing passenger')
+                passenger.removePassenger()
+                passengerCount+=1
+            }
+            else{
+                console.log('Taxi full. No more passengers allowed. Please drop existing passengers first')
+            }
+
+        }
+});
+}
+
+function keyPressed(){
+    // // display passengers upon SPACEBAR key press
+     if (keyIsDown(32)) {
+        console.log("SPACE")
+        getCarPositionX = car.getPosition()
+        passenger = new Passenger(getCarPositionX + 500,450,100,100);
+        passenger.show()       
+        return true
+    }
+    // drop passengers upon DOWN_ARROW key press
+    else if (keyIsDown(DOWN_ARROW)) {
+        console.log("dropping passenger")
+        // check if passenger exists and display passeneger on screen for 2 seconds and disappear after wards. 
+        if (passengerCount>0){
+            passengerCount-=1
+            passenger = new Passenger(getCarPositionX + 100,450,100,100);
+            passenger.show()
+            setTimeout(() => {  passenger.removePassenger(); }, 2000);
+        }
+        else{
+            console.log('no passengers found in taxi')
+        }
+        
+    }
 }
 
 function draw() {
@@ -77,6 +124,7 @@ function draw() {
     if (keyIsDown(RIGHT_ARROW)) {
         car.move("RIGHT")
     }
+    
 }
 
 function getX(x, width) {
