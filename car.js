@@ -4,34 +4,36 @@ class Car {
         this.y = y;
         this.w = w;
         this.h = h;
-        this.body = this.createCarComposite(x, y, w, h, wheelRadius);
+        this.composite;
+        this.body;
         this.wheelA;
         this.wheelB;
         this.maxVelocityX = 3;
-        Composite.add(world, this.body);
+        this.createCarComposite(x, y, w, h, wheelRadius)
+        Composite.add(world, this.composite);
+    }
+
+    getPosition() {
+        return this.body.position;
     }
 
     createCarComposite(xx, yy, width, height, wheelRadius) {
-        var Body = Matter.Body,
-            Bodies = Matter.Bodies,
-            Composite = Matter.Composite,
-            Constraint = Matter.Constraint;
-
         var group = Body.nextGroup(true),
             wheelAOffset = -width * 0.5 + wheelRadius,
             wheelBOffset = width * 0.5 - wheelRadius,
             wheelYOffset = height - height * 0.5;
 
-        var car = Composite.create({ label: 'Car' }),
-            body = Bodies.rectangle(xx, yy, width, height, {
-                collisionFilter: {
-                    group: group
-                },
-                // chamfer: {
-                //     radius: height * 0.5
-                // },
-                density: 0.0002
-            });
+        this.composite = Composite.create({ label: 'car' })
+        this.body = Bodies.rectangle(xx, yy, width, height, {
+            collisionFilter: {
+                group: group
+            },
+            // chamfer: {
+            //     radius: height * 0.5
+            // },
+            density: 0.0002
+        });
+        this.body.label = 'car-body';
 
         this.wheelA = Bodies.circle(xx + wheelAOffset, yy + wheelYOffset, wheelRadius, {
             collisionFilter: {
@@ -39,6 +41,7 @@ class Car {
             },
             friction: 0.8
         });
+        this.wheelA.label = 'car-wheelA';
 
         this.wheelB = Bodies.circle(xx + wheelBOffset, yy + wheelYOffset, wheelRadius, {
             collisionFilter: {
@@ -46,9 +49,10 @@ class Car {
             },
             friction: 0.8
         });
+        this.wheelB.label = 'car-wheelB';
 
         var axelA = Constraint.create({
-            bodyB: body,
+            bodyB: this.body,
             pointB: { x: wheelAOffset, y: wheelYOffset },
             bodyA: this.wheelA,
             stiffness: 1,
@@ -56,32 +60,31 @@ class Car {
         });
 
         var axelB = Constraint.create({
-            bodyB: body,
+            bodyB: this.body,
             pointB: { x: wheelBOffset, y: wheelYOffset },
             bodyA: this.wheelB,
             stiffness: 1,
             length: 0
         });
 
-        Composite.addBody(car, body);
-        Composite.addBody(car, this.wheelA);
-        Composite.addBody(car, this.wheelB);
-        Composite.addConstraint(car, axelA);
-        Composite.addConstraint(car, axelB);
-        return car;
+        Composite.addBody(this.composite, this.body);
+        Composite.addBody(this.composite, this.wheelA);
+        Composite.addBody(this.composite, this.wheelB);
+        Composite.addConstraint(this.composite, axelA);
+        Composite.addConstraint(this.composite, axelB);
     }
 
     move(direction) {
         switch (direction) {
             case "LEFT":
-                Matter.Composite.translate(this.body, { x: -this.maxVelocityX, y: 0 })
-                Matter.Body.rotate(this.wheelA, -Math.PI / 36);
-                Matter.Body.rotate(this.wheelB, -Math.PI / 36);
+                Composite.translate(this.composite, { x: -this.maxVelocityX, y: 0 })
+                Body.rotate(this.wheelA, -Math.PI / 36);
+                Body.rotate(this.wheelB, -Math.PI / 36);
                 break;
             case "RIGHT":
-                Matter.Composite.translate(this.body, { x: this.maxVelocityX, y: 0 })
-                Matter.Body.rotate(this.wheelA, Math.PI / 36);
-                Matter.Body.rotate(this.wheelB, Math.PI / 36);
+                Composite.translate(this.composite, { x: this.maxVelocityX, y: 0 })
+                Body.rotate(this.wheelA, Math.PI / 36);
+                Body.rotate(this.wheelB, Math.PI / 36);
                 break;
         }
     }

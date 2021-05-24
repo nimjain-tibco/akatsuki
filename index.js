@@ -6,9 +6,17 @@ var Engine = Matter.Engine,
     Mouse = Matter.Mouse,
     Composite = Matter.Composite,
     Body = Matter.Body,
+    Svg = Matter.Svg,
+    Common = Matter.Common,
+    Bounds = Matter.Bounds,
+    Vector = Matter.Vector,
+    Constraint = Matter.Constraint,
+    Events = Matter.Events,
     Bodies = Matter.Bodies;
 
-var engine, render, world, runner, ground, car;
+var engine, render, world, runner, ground, car, terrain;
+var viewportCentre, extents, boundsScaleTarget, boundsScale, initialCarPos;
+var wallTop, wallRight, wallBottom, wallLeft;
 
 function setup() {
     noCanvas();
@@ -39,10 +47,22 @@ function setup() {
     Runner.run(runner, engine);
 
 
-    ground = new Ground(getX(0, config.canvas.width), (config.canvas.height - 100),
-        config.canvas.width, 50);
-    car = new Car(getX(100, 200), 300, 200, 80, 40);
+    // ground = new Ground(getX(0, config.canvas.width), (config.canvas.height * 0.9),
+    //     config.canvas.width, 50);
 
+    screenWidth = config.canvas.width;
+    screenHeight = config.canvas.height;
+    wallThikness = 50
+
+    wallTop = new Wall(getX(0, screenWidth), (0 - wallThikness), screenWidth, wallThikness);
+    wallRight = new Wall(screenWidth + (wallThikness / 2), (screenHeight / 2), wallThikness, screenHeight);
+    wallBottom = new Wall(getX(0, screenWidth), (screenHeight - wallThikness / 2), screenWidth, wallThikness);
+    wallLeft = new Wall(0 - (wallThikness / 2), (screenHeight / 2), wallThikness, screenHeight);
+
+    initialCarPos = { x: getX(100, 200), y: (config.canvas.height * 0.1) };
+    car = new Car(initialCarPos.x, initialCarPos.y, 200, 80, 40);
+
+    // initialCarPos = Vector.magnitude(Vector.sub(car.getPosition(), viewportCentre))
     // fit the render viewport to the scene
     Render.lookAt(render, {
         min: { x: 0, y: 0 },
@@ -52,10 +72,9 @@ function setup() {
 
 function draw() {
     if (keyIsDown(LEFT_ARROW)) {
-        console.log("moving LEFT")
         car.move("LEFT")
-    } else if (keyIsDown(RIGHT_ARROW)) {
-        console.log("moving RIGHT")
+    }
+    if (keyIsDown(RIGHT_ARROW)) {
         car.move("RIGHT")
     }
 }
@@ -63,3 +82,13 @@ function draw() {
 function getX(x, width) {
     return x + (width * 0.5);
 }
+
+window.addEventListener("resize", function () {
+    config.canvas.width = window.innerWidth;
+    config.canvas.height = window.innerHeight;
+});
+
+(function unloadScrollBars() {
+    document.documentElement.style.overflow = 'hidden';  // firefox, chrome
+    document.body.scroll = "no"; // ie only
+})()
