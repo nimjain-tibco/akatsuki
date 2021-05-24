@@ -6,12 +6,20 @@ var Engine = Matter.Engine,
     MouseConstraint = Matter.MouseConstraint,
     Mouse = Matter.Mouse,
     Composite = Matter.Composite,
-    Body = Matter.Body,
+    Body = Matter.Body;
+
+var passenger, collisionCount=true, passengerCount=0,
+    Svg = Matter.Svg,
+    Common = Matter.Common,
+    Bounds = Matter.Bounds,
+    Vector = Matter.Vector,
+    Constraint = Matter.Constraint,
     Events = Matter.Events,
     Bodies = Matter.Bodies;
 
-
-var engine, render, world, runner, ground, car, passenger, collisionCount=true, passengerCount=0;
+var engine, render, world, runner, ground, car, terrain;
+var viewportCentre, extents, boundsScaleTarget, boundsScale, initialCarPos;
+var wallTop, wallRight, wallBottom, wallLeft;
 
 function setup() {
     noCanvas();
@@ -41,12 +49,23 @@ function setup() {
     runner = Runner.create();
     Runner.run(runner, engine);
 
-    // create bodies
-    ground = new Ground(getX(0, config.canvas.width), (config.canvas.height - 100),
-        config.canvas.width, 50);
-    car = new Car(getX(100, 200), 300, 200, 80, 40);
-    passenger = new Passenger(500, 300, 50, 50);
 
+    // ground = new Ground(getX(0, config.canvas.width), (config.canvas.height * 0.9),
+    //     config.canvas.width, 50);
+
+    screenWidth = config.canvas.width;
+    screenHeight = config.canvas.height;
+    wallThikness = 50
+
+    wallTop = new Wall(getX(0, screenWidth), (0 - wallThikness), screenWidth, wallThikness);
+    wallRight = new Wall(screenWidth + (wallThikness / 2), (screenHeight / 2), wallThikness, screenHeight);
+    wallBottom = new Wall(getX(0, screenWidth), (screenHeight - wallThikness / 2), screenWidth, wallThikness);
+    wallLeft = new Wall(0 - (wallThikness / 2), (screenHeight / 2), wallThikness, screenHeight);
+
+    initialCarPos = { x: getX(100, 200), y: (config.canvas.height * 0.1) };
+    car = new Car(initialCarPos.x, initialCarPos.y, 200, 80, 40);
+
+    // initialCarPos = Vector.magnitude(Vector.sub(car.getPosition(), viewportCentre))
     // fit the render viewport to the scene
     Render.lookAt(render, {
         min: { x: 0, y: 0 },
@@ -56,7 +75,7 @@ function setup() {
 
     Events.on(engine, 'collisionStart', function(event) {
 
-        if (car.detectCollision(event) && passenger.detectCollision(event) ){
+        if (car && passenger && car.detectCollision(event) && passenger.detectCollision(event) ){
             console.log('collision start')
             // remove passenger if passengerCount is not equal to 3
             if (passengerCount != 3){
@@ -100,10 +119,9 @@ function keyPressed(){
 
 function draw() {
     if (keyIsDown(LEFT_ARROW)) {
-        console.log("moving LEFT")
         car.move("LEFT")
-    } else if (keyIsDown(RIGHT_ARROW)) {
-        console.log("moving RIGHT")
+    }
+    if (keyIsDown(RIGHT_ARROW)) {
         car.move("RIGHT")
     }
     
@@ -113,3 +131,12 @@ function getX(x, width) {
     return x + (width * 0.5);
 }
 
+window.addEventListener("resize", function () {
+    config.canvas.width = window.innerWidth;
+    config.canvas.height = window.innerHeight;
+});
+
+(function unloadScrollBars() {
+    document.documentElement.style.overflow = 'hidden';  // firefox, chrome
+    document.body.scroll = "no"; // ie only
+})()

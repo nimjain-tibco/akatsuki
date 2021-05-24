@@ -7,7 +7,7 @@ class Passenger {
 
         this.body = Bodies.rectangle(x, y, w, h);
         this.body.label = 'passenger';
-        //Composite.add(world, this.body);
+
         this.show = function() {
             Composite.add(world, this.body);
         }
