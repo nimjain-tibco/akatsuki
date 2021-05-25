@@ -124,6 +124,9 @@ function draw() {
     if (keyIsDown(RIGHT_ARROW)) {
         car.move("RIGHT")
     }
+    if (keyIsDown(32)){
+        car.move("JUMP")
+    }
     
 }
 
