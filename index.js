@@ -6,9 +6,7 @@ var Engine = Matter.Engine,
     MouseConstraint = Matter.MouseConstraint,
     Mouse = Matter.Mouse,
     Composite = Matter.Composite,
-    Body = Matter.Body;
-
-var passenger, collisionCount=true, passengerCount=0,
+    Body = Matter.Body,
     Svg = Matter.Svg,
     Common = Matter.Common,
     Bounds = Matter.Bounds,
@@ -20,6 +18,8 @@ var passenger, collisionCount=true, passengerCount=0,
 var engine, render, world, runner, ground, car, terrain;
 var viewportCentre, extents, boundsScaleTarget, boundsScale, initialCarPos;
 var wallTop, wallRight, wallBottom, wallLeft;
+var passangersInCar = [];
+
 
 function setup() {
     noCanvas();
@@ -72,48 +72,62 @@ function setup() {
         max: { x: config.canvas.width, y: config.canvas.height }
     });
 
-
-    Events.on(engine, 'collisionStart', function(event) {
-
-        if (car && passenger && car.detectCollision(event) && passenger.detectCollision(event) ){
-            console.log('collision start')
-            // remove passenger if passengerCount is not equal to 3
-            if (passengerCount != 3){
-                console.log('removing passenger')
-                passenger.removePassenger()
-                passengerCount+=1
+    Events.on(engine, 'collisionStart', function (event) {
+        if (car.detectCollision(event)) {
+            var pair = event.pairs;
+            console.log('collision start with pair count:', pair.length)
+            for (var i = 0; i < pair.length; i++) {
+                var bodyALabel = pair[i].bodyA.label
+                var bodyBLabel = pair[i].bodyB.label
+                var passanger;
+                if (bodyALabel.startsWith('passenger')) {
+                    passanger = pair[i].bodyA
+                }
+                if (bodyBLabel.startsWith('passenger')) {
+                    passanger = pair[i].bodyB
+                }
+                if (typeof passanger === 'undefined') {
+                    continue;
+                }
+                if (passangersInCar.length < 3) {
+                    console.log("Number of passengers in car before:", passangersInCar.length)
+                    console.log("Adding passenger to car")
+                    passangersInCar.push(passanger)
+                    passanger.isInsideCar = true
+                    // passanger.hide()
+                    passanger.remove()
+                    console.log("Number of passengers in car after:", passangersInCar.length)
+                    break;
+                } else {
+                    console.log('Taxi full. No more passengers allowed. Please drop existing passengers first')
+                }
             }
-            else{
-                console.log('Taxi full. No more passengers allowed. Please drop existing passengers first')
-            }
-
         }
-});
+    });
 }
 
-function keyPressed(){
-    // // display passengers upon SPACEBAR key press
-     if (keyIsDown(32)) {
-        console.log("SPACE")
+function keyPressed() {
+    // display passengers upon DOWN_ARROW key press
+    if (keyIsDown(DOWN_ARROW)) {
+        console.log("Creating new passenger")
         getCarPositionX = car.getPosition()
-        passenger = new Passenger(getCarPositionX + 500,450,100,100);
-        passenger.show()       
-        return true
+        new Passenger(getCarPositionX + random(100, 300), 450, 70, 70);
     }
-    // drop passengers upon DOWN_ARROW key press
-    else if (keyIsDown(DOWN_ARROW)) {
-        console.log("dropping passenger")
+    // drop passengers upon UP_ARROW key press
+    if (keyIsDown(UP_ARROW)) {
+        console.log("Number of passengers in car:", passangersInCar.length)
         // check if passenger exists and display passeneger on screen for 2 seconds and disappear after wards. 
-        if (passengerCount>0){
-            passengerCount-=1
-            passenger = new Passenger(getCarPositionX + 100,450,100,100);
-            passenger.show()
-            setTimeout(() => {  passenger.removePassenger(); }, 2000);
-        }
-        else{
+        if (passangersInCar.length > 0) {
+            console.log("Dropping passenger now")
+            // TODO: change position of existing passenger from car to ground
+            // TODO: also remove the passanger from world
+            // passangersInCar[0].remove()
+            console.log("Number of passengers in car before:", passangersInCar.length)
+            passangersInCar.shift()
+            console.log("Number of passengers in car after:", passangersInCar.length)
+        } else {
             console.log('no passengers found in taxi')
         }
-        
     }
 }
 
@@ -124,7 +138,7 @@ function draw() {
     if (keyIsDown(RIGHT_ARROW)) {
         car.move("RIGHT")
     }
-    
+
 }
 
 function getX(x, width) {

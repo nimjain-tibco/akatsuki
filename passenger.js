@@ -4,34 +4,16 @@ class Passenger {
         this.y = y;
         this.w = w;
         this.h = h;
-
         this.body = Bodies.rectangle(x, y, w, h);
         this.body.label = 'passenger';
-
-        this.show = function() {
-            Composite.add(world, this.body);
+        this.body.isInsideCar = false;
+        this.body.hide = function () {
+            this.render.visible = false;
         }
-        
-    }
-
-    detectCollision(event){
-        console.log(event)
-        var pair = event.pairs;
-        for (var i = 0; i < pair.length; i++) {
-            var aElm = pair[i].bodyA
-            var bElm = pair[i].bodyB
-            if (aElm.label.startsWith('passenger') || bElm.label.startsWith('passenger')) {
-                return true
-            }
-            else{
-                return false
-            }
+        this.body.remove = function () {
+            World.remove(world, this)
         }
-         
-    }
-
-    removePassenger(){
-        World.remove(world, this.body)
+        Composite.add(world, this.body);
     }
 }
 
