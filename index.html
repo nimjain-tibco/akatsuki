@@ -9,7 +9,10 @@
     <script src="lib/matter/matter.js" type="text/javascript"></script>
     <script src="lib/pathseg/pathseg.js" type="text/javascript"></script>
     <script src="lib/decomp/decomp.js" type="text/javascript"></script>
-
+    <script
+      src="lib/jQuery/jquery-3.6.0.min.js"
+      type="text/javascript"
+    ></script>
     <style>
       body {
         padding: 0;
@@ -23,5 +26,22 @@
   <script src="car.js?time=123456789" type="text/javascript"></script>
   <script src="passenger.js?time=12345678" type="text/javascript"></script>
   <script src="wall.js?time=123456789" type="text/javascript"></script>
-  
+  <script src="scorecard.js?time=123456789" type="text/javascript"></script>
+  <style>
+    #leftDiv {
+      position: fixed;
+      color: #fff;
+      padding: 1em;
+    }
+    #rightDiv {
+      position: fixed;
+      color: #fff;
+      right: 0;
+      padding: 1em;
+    }
+  </style>
+  <body>
+    <div id="leftDiv">leftDiv</div>
+    <div id="rightDiv">rightDiv</div>
+  </body>
 </html>

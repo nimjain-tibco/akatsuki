@@ -22,6 +22,7 @@ var passangersInCar = [];
 
 
 function setup() {
+    setNumPassenger(0);
     noCanvas();
     config.canvas.width = windowWidth - config.canvas.margin;
     config.canvas.height = windowHeight - config.canvas.margin;
@@ -48,7 +49,6 @@ function setup() {
     // create runner
     runner = Runner.create();
     Runner.run(runner, engine);
-
 
     // ground = new Ground(getX(0, config.canvas.width), (config.canvas.height * 0.9),
     //     config.canvas.width, 50);
@@ -93,6 +93,7 @@ function setup() {
                     console.log("Number of passengers in car before:", passangersInCar.length)
                     console.log("Adding passenger to car")
                     passangersInCar.push(passanger)
+                    setNumPassenger(passangersInCar.length)
                     passanger.isInsideCar = true
                     // passanger.hide()
                     passanger.remove()
@@ -104,6 +105,23 @@ function setup() {
             }
         }
     });
+
+    textSize(width / 3);
+    textAlign(CENTER, CENTER);
+}
+
+function draw() {
+    background(0);
+    text("Hello", 100, 100, 70, 80);
+    if (keyIsDown(LEFT_ARROW)) {
+        car.move("LEFT")
+    }
+    if (keyIsDown(RIGHT_ARROW)) {
+        car.move("RIGHT")
+    }
+    if (keyIsDown(32)) {
+        car.move("JUMP")
+    }
 }
 
 function keyPressed() {
@@ -111,7 +129,7 @@ function keyPressed() {
     if (keyIsDown(DOWN_ARROW)) {
         console.log("Creating new passenger")
         getCarPositionX = car.getPosition()
-        new Passenger(getCarPositionX + random(100, 300), 450, 70, 70);
+        new Passenger(getCarPositionX + random(300, 500), 450, 70, 70);
     }
     // drop passengers upon UP_ARROW key press
     if (keyIsDown(UP_ARROW)) {
@@ -124,22 +142,11 @@ function keyPressed() {
             // passangersInCar[0].remove()
             console.log("Number of passengers in car before:", passangersInCar.length)
             passangersInCar.shift()
+            setNumPassenger(passangersInCar.length)
             console.log("Number of passengers in car after:", passangersInCar.length)
         } else {
             console.log('no passengers found in taxi')
         }
-    }
-}
-
-function draw() {
-    if (keyIsDown(LEFT_ARROW)) {
-        car.move("LEFT")
-    }
-    if (keyIsDown(RIGHT_ARROW)) {
-        car.move("RIGHT")
-    }
-    if (keyIsDown(32)) {
-        car.move("JUMP")
     }
 }
 
