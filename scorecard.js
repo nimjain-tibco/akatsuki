@@ -1,3 +1,4 @@
 function setNumPassenger(num) {
-    $('#leftDiv').text("Passengers in Car: " + num)
+    $('#leftDiv').html("Passengers in Car: " + num)
+    $('#leftDiv').append("<br>Patience: " + num)
 }

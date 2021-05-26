@@ -128,8 +128,7 @@ function keyPressed() {
     // display passengers upon DOWN_ARROW key press
     if (keyIsDown(DOWN_ARROW)) {
         console.log("Creating new passenger")
-        getCarPositionX = car.getPosition()
-        new Passenger(getCarPositionX + random(300, 500), 450, 70, 70);
+        new Passenger(car.getPosition().x + random(300, 500), 450, 70, 70);
     }
     // drop passengers upon UP_ARROW key press
     if (keyIsDown(UP_ARROW)) {
@@ -143,6 +142,9 @@ function keyPressed() {
             console.log("Number of passengers in car before:", passangersInCar.length)
             passangersInCar.shift()
             setNumPassenger(passangersInCar.length)
+            var tempP = new Passenger(car.getPosition().x + random(100, 200), car.getPosition().y, 70, 70);
+            tempP.body.label = "droppedPassenger";
+            setTimeout(function () { tempP.body.remove(); }, 1000);
             console.log("Number of passengers in car after:", passangersInCar.length)
         } else {
             console.log('no passengers found in taxi')

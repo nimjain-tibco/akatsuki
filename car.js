@@ -104,9 +104,4 @@ class Car {
                 Body.applyForce(this.body, this.body.position, { x: 0, y: -0.10 });
         }
     }
-
-    getPosition() {
-        console.log('getting car position')
-        return (this.body.position.x)
-    }
 }
