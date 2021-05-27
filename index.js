@@ -19,6 +19,7 @@ var engine, render, world, runner, ground, car, terrain;
 var viewportCentre, extents, boundsScaleTarget, boundsScale, initialCarPos;
 var wallTop, wallRight, wallBottom, wallLeft;
 var passangersInCar = [];
+var isPlatformPresent = false;
 
 
 function setup() {
@@ -150,6 +151,53 @@ function keyPressed() {
             console.log('no passengers found in taxi')
         }
     }
+
+    if (keyIsDown(49)) {
+        // platform 1:   on keyPress 1 
+        console.log("Creating platform 1")
+        new Platform(170, 160, 300, 40);
+    }
+    if (keyIsDown(50)) {
+        // platform 2:   on keyPress 2  
+        console.log("Creating platform 2")
+        new Platform(700, 160, 300, 40);
+    }
+    if (keyIsDown(51)) {
+        // platform 3:   on keyPress 3  
+        console.log("Creating platform 3")
+        new Platform(1220, 160, 300, 40);
+    }
+    if (keyIsDown(52)) {
+        // platform 4:   on keyPress 4
+        console.log("Creating platform 4")
+        new Platform(170, 330, 300, 40);
+    }
+    if (keyIsDown(53)) {
+        // platform 5:   on keyPress 5
+        console.log("Creating platform 5")
+        new Platform(700, 330, 300, 40);
+    }
+    if (keyIsDown(54)) {
+        // platform 6:   on keyPress 6
+        console.log("Creating platform 6")
+        new Platform(1220, 330, 300, 40);
+    }
+    if (keyIsDown(55)) {
+        // platform 7:   on keyPress 7
+        console.log("Creating platform 7")
+        new Platform(170, 500, 300, 40);
+    }
+    if (keyIsDown(56)) {
+        // platform 8:   on keyPress 8
+        console.log("Creating platform 8")
+        new Platform(700, 500, 300, 40);
+    }
+    if (keyIsDown(57)) {
+        // platform 9:   on keyPress 9
+        console.log("Creating platform 9")
+        new Platform(1220, 500, 300, 40);
+    }
+
 }
 
 function getX(x, width) {
