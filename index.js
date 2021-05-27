@@ -19,8 +19,6 @@ var engine, render, world, runner, ground, car, terrain;
 var viewportCentre, extents, boundsScaleTarget, boundsScale, initialCarPos;
 var wallTop, wallRight, wallBottom, wallLeft;
 var passangersInCar = [];
-var isPlatformPresent = false;
-
 
 function setup() {
     setNumPassenger(0);
@@ -74,35 +72,36 @@ function setup() {
     });
 
     Events.on(engine, 'collisionStart', function (event) {
-        if (car.detectCollision(event)) {
-            var pair = event.pairs;
-            console.log('collision start with pair count:', pair.length)
-            for (var i = 0; i < pair.length; i++) {
-                var bodyALabel = pair[i].bodyA.label
-                var bodyBLabel = pair[i].bodyB.label
-                var passanger;
-                if (bodyALabel.startsWith('passenger')) {
-                    passanger = pair[i].bodyA
-                }
-                if (bodyBLabel.startsWith('passenger')) {
-                    passanger = pair[i].bodyB
-                }
-                if (typeof passanger === 'undefined') {
-                    continue;
-                }
-                if (passangersInCar.length < 3) {
-                    console.log("Number of passengers in car before:", passangersInCar.length)
-                    console.log("Adding passenger to car")
-                    passangersInCar.push(passanger)
-                    setNumPassenger(passangersInCar.length)
-                    passanger.isInsideCar = true
-                    // passanger.hide()
-                    passanger.remove()
-                    console.log("Number of passengers in car after:", passangersInCar.length)
-                    break;
-                } else {
-                    console.log('Taxi full. No more passengers allowed. Please drop existing passengers first')
-                }
+        if (!car.detectCollision(event)) {
+            return;
+        }
+        var pair = event.pairs;
+        console.log('collision start with pair count:', pair.length)
+        for (var i = 0; i < pair.length; i++) {
+            var bodyALabel = pair[i].bodyA.label
+            var bodyBLabel = pair[i].bodyB.label
+            var passanger;
+            if (bodyALabel.startsWith('passenger')) {
+                passanger = pair[i].bodyA
+            }
+            if (bodyBLabel.startsWith('passenger')) {
+                passanger = pair[i].bodyB
+            }
+            if (typeof passanger === 'undefined') {
+                continue;
+            }
+            if (passangersInCar.length < 3) {
+                console.log("Number of passengers in car before:", passangersInCar.length)
+                console.log("Adding passenger to car")
+                passangersInCar.push(passanger)
+                setNumPassenger(passangersInCar.length)
+                passanger.isInsideCar = true
+                // passanger.hide()
+                passanger.remove()
+                console.log("Number of passengers in car after:", passangersInCar.length)
+                break;
+            } else {
+                console.log('Taxi full. No more passengers allowed. Please drop existing passengers first')
             }
         }
     });
@@ -152,56 +151,109 @@ function keyPressed() {
         }
     }
 
-    if (keyIsDown(49)) {
+    if (keyIsDown(49) || keyIsDown(97)) {
         // platform 1:   on keyPress 1 
-        console.log("Creating platform 1")
-        new Platform(170, 160, 300, 40);
+        var p = isPlatformPresent(1);
+        if (typeof p !== 'undefined') {
+            World.remove(world, p);
+        } else {
+            console.log("Creating platform 1")
+            new Platform(1, 170, 160, 300, 40);
+        }
     }
-    if (keyIsDown(50)) {
+    if (keyIsDown(50) || keyIsDown(98)) {
         // platform 2:   on keyPress 2  
-        console.log("Creating platform 2")
-        new Platform(700, 160, 300, 40);
+        var p = isPlatformPresent(2);
+        if (typeof p !== 'undefined') {
+            World.remove(world, p);
+        } else {
+            console.log("Creating platform 2")
+            new Platform(2, 700, 160, 300, 40);
+        }
     }
-    if (keyIsDown(51)) {
+    if (keyIsDown(51) || keyIsDown(99)) {
         // platform 3:   on keyPress 3  
-        console.log("Creating platform 3")
-        new Platform(1220, 160, 300, 40);
+        var p = isPlatformPresent(3);
+        if (typeof p !== 'undefined') {
+            World.remove(world, p);
+        } else {
+            console.log("Creating platform 3")
+            new Platform(3, 1220, 160, 300, 40);
+        }
     }
-    if (keyIsDown(52)) {
+    if (keyIsDown(52) || keyIsDown(100)) {
         // platform 4:   on keyPress 4
-        console.log("Creating platform 4")
-        new Platform(170, 330, 300, 40);
+        var p = isPlatformPresent(4);
+        if (typeof p !== 'undefined') {
+            World.remove(world, p);
+        } else {
+            console.log("Creating platform 4")
+            new Platform(4, 170, 330, 300, 40);
+        }
     }
-    if (keyIsDown(53)) {
+    if (keyIsDown(53) || keyIsDown(101)) {
         // platform 5:   on keyPress 5
-        console.log("Creating platform 5")
-        new Platform(700, 330, 300, 40);
+        var p = isPlatformPresent(5);
+        if (typeof p !== 'undefined') {
+            World.remove(world, p);
+        } else {
+            console.log("Creating platform 5")
+            new Platform(5, 700, 330, 300, 40);
+        }
     }
-    if (keyIsDown(54)) {
+    if (keyIsDown(54) || keyIsDown(102)) {
         // platform 6:   on keyPress 6
-        console.log("Creating platform 6")
-        new Platform(1220, 330, 300, 40);
+        var p = isPlatformPresent(6);
+        if (typeof p !== 'undefined') {
+            World.remove(world, p);
+        } else {
+            console.log("Creating platform 6")
+            new Platform(6, 1220, 330, 300, 40);
+        }
     }
-    if (keyIsDown(55)) {
+    if (keyIsDown(55) || keyIsDown(103)) {
         // platform 7:   on keyPress 7
-        console.log("Creating platform 7")
-        new Platform(170, 500, 300, 40);
+        var p = isPlatformPresent(7);
+        if (typeof p !== 'undefined') {
+            World.remove(world, p);
+        } else {
+            console.log("Creating platform 7")
+            new Platform(7, 170, 500, 300, 40);
+        }
     }
-    if (keyIsDown(56)) {
+    if (keyIsDown(56) || keyIsDown(104)) {
         // platform 8:   on keyPress 8
-        console.log("Creating platform 8")
-        new Platform(700, 500, 300, 40);
+        var p = isPlatformPresent(8);
+        if (typeof p !== 'undefined') {
+            World.remove(world, p);
+        } else {
+            console.log("Creating platform 8")
+            new Platform(8, 700, 500, 300, 40);
+        }
     }
-    if (keyIsDown(57)) {
+    if (keyIsDown(57) || keyIsDown(105)) {
         // platform 9:   on keyPress 9
-        console.log("Creating platform 9")
-        new Platform(1220, 500, 300, 40);
+        var p = isPlatformPresent(9);
+        if (typeof p !== 'undefined') {
+            World.remove(world, p);
+        } else {
+            console.log("Creating platform 9")
+            new Platform(9, 1220, 500, 300, 40);
+        }
     }
-
 }
 
 function getX(x, width) {
     return x + (width * 0.5);
+}
+
+function isPlatformPresent(i) {
+    for (var j = 0; j < world.bodies.length; j++) {
+        if (world.bodies[j].label == ('platform#' + i)) {
+            return world.bodies[j];
+        }
+    }
+    return;
 }
 
 window.addEventListener("resize", function () {
