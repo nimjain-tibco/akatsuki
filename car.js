@@ -8,13 +8,21 @@ class Car {
         this.body;
         this.wheelA;
         this.wheelB;
-        this.maxVelocityX = 3;
+        this.maxVelocityX = 5;
         this.createCarComposite(x, y, w, h, wheelRadius)
         Composite.add(world, this.composite);
     }
 
     getPosition() {
         return this.body.position;
+    }
+
+    getHeight(){
+        return this.h;
+    }
+
+    getWidth(){
+        return this.w;
     }
 
     createCarComposite(xx, yy, width, height, wheelRadius) {
