@@ -17,14 +17,6 @@ class Car {
         return this.body.position;
     }
 
-    getHeight(){
-        return this.h;
-    }
-
-    getWidth(){
-        return this.w;
-    }
-
     createCarComposite(xx, yy, width, height, wheelRadius) {
         var group = Body.nextGroup(true),
             wheelAOffset = -width * 0.5 + wheelRadius,

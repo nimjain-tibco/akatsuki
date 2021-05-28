@@ -154,7 +154,7 @@ function keyPressed() {
     
     //calculations for platform area
     var yMax = config.canvas.height - wallBottom.h - 20;
-    var yBufferThreshold = 20 + car.getHeight();
+    var yBufferThreshold = 20 + car.h;
     var yLevel = config.platform.yLevel + 1
     var yPartition = yMax / yLevel;
     while(yPartition < yBufferThreshold && yLevel > 1){
@@ -163,7 +163,7 @@ function keyPressed() {
     }
     yPartition += 10;
     var xMax = config.canvas.width;
-    var xBufferThreshold = 20 + car.getWidth();
+    var xBufferThreshold = 20 + car.w;
     var xLevel = config.platform.xLevel + 1
     var xPartition = xMax / xLevel;
     while(xPartition < xBufferThreshold){
