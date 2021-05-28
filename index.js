@@ -40,7 +40,7 @@ function setup() {
             showAngleIndicator: config.debug,
             showCollisions: config.debug,
             wireframes: config.debug,
-            background : "#87CEEB"
+            background: "#87CEEB"
         }
     });
 
@@ -151,26 +151,16 @@ function keyPressed() {
             console.log('no passengers found in taxi')
         }
     }
-    
+
     //calculations for platform area
     var yMax = config.canvas.height - wallBottom.h - 20;
-    var yBufferThreshold = 20 + car.h;
     var yLevel = config.platform.yLevel + 1
     var yPartition = yMax / yLevel;
-    while(yPartition < yBufferThreshold && yLevel > 1){
-        yLevel--;
-        yPartition = yPartition/yLevel;
-    }
-    yPartition += 10;
     var xMax = config.canvas.width;
-    var xBufferThreshold = 20 + car.w;
-    var xLevel = config.platform.xLevel + 1
+    var xLevel = config.platform.xLevel
     var xPartition = xMax / xLevel;
-    while(xPartition < xBufferThreshold){
-        xLevel--;
-        xPartition = xPartition/xLevel;
-    }
-    //xPartition -= 5; 
+    var platformWidth = xPartition - (xPartition * config.platform.xMarginFactor);
+
     if (keyIsDown(49) || keyIsDown(97)) {
         // platform 1:   on keyPress 1 
         var p = isPlatformPresent(1);
@@ -178,7 +168,7 @@ function keyPressed() {
             World.remove(world, p);
         } else {
             console.log("Creating platform 1")
-            new Platform(1, xPartition + config.platform.xCap, (yPartition * ( yLevel - 1 )), config.platform.width, config.platform.height);
+            new Platform(1, getX((xPartition * 0), xPartition), (yPartition * (yLevel - 1)), platformWidth, config.platform.height);
         }
     }
     if (keyIsDown(50) || keyIsDown(98)) {
@@ -188,7 +178,7 @@ function keyPressed() {
             World.remove(world, p);
         } else {
             console.log("Creating platform 2")
-            new Platform(2, (xPartition * 2 + config.platform.xCap), (yPartition * ( yLevel - 1 )), config.platform.width, config.platform.height);
+            new Platform(2, getX((xPartition * 1), xPartition), (yPartition * (yLevel - 1)), platformWidth, config.platform.height);
         }
     }
     if (keyIsDown(51) || keyIsDown(99)) {
@@ -198,7 +188,7 @@ function keyPressed() {
             World.remove(world, p);
         } else {
             console.log("Creating platform 3")
-            new Platform(3, (xPartition * 3 + config.platform.xCap), (yPartition * ( yLevel - 1 )), config.platform.width, config.platform.height);
+            new Platform(3, getX((xPartition * 2), xPartition), (yPartition * (yLevel - 1)), platformWidth, config.platform.height);
         }
     }
     if (keyIsDown(52) || keyIsDown(100)) {
@@ -208,7 +198,7 @@ function keyPressed() {
             World.remove(world, p);
         } else {
             console.log("Creating platform 4")
-            new Platform(4, xPartition + config.platform.xCap, ((yPartition * ( yLevel - 2 )) + config.platform.yCap), config.platform.width, config.platform.height);
+            new Platform(4, getX((xPartition * 0), xPartition), (yPartition * (yLevel - 2)), platformWidth, config.platform.height);
         }
     }
     if (keyIsDown(53) || keyIsDown(101)) {
@@ -218,7 +208,7 @@ function keyPressed() {
             World.remove(world, p);
         } else {
             console.log("Creating platform 5")
-            new Platform(5, (xPartition * 2 + config.platform.xCap), ((yPartition * ( yLevel - 2 )) + config.platform.yCap), config.platform.width, config.platform.height);
+            new Platform(5, getX((xPartition * 1), xPartition), (yPartition * (yLevel - 2)), platformWidth, config.platform.height);
         }
     }
     if (keyIsDown(54) || keyIsDown(102)) {
@@ -228,7 +218,7 @@ function keyPressed() {
             World.remove(world, p);
         } else {
             console.log("Creating platform 6")
-            new Platform(6, (xPartition * 3 + config.platform.xCap), ((yPartition * ( yLevel - 2 )) + config.platform.yCap), config.platform.width, config.platform.height);
+            new Platform(6, getX((xPartition * 2), xPartition), (yPartition * (yLevel - 2)), platformWidth, config.platform.height);
         }
     }
     if (keyIsDown(55) || keyIsDown(103)) {
@@ -238,8 +228,7 @@ function keyPressed() {
             World.remove(world, p);
         } else {
             console.log("Creating platform 7")
-            new Platform(7, xPartition + config.platform.xCap, ((yPartition * ( yLevel - 3 )) + 2 * config.platform.yCap), config.platform.width, config.platform.height);
-            
+            new Platform(7, getX((xPartition * 0), xPartition), (yPartition * (yLevel - 3)), platformWidth, config.platform.height);
         }
     }
     if (keyIsDown(56) || keyIsDown(104)) {
@@ -249,7 +238,7 @@ function keyPressed() {
             World.remove(world, p);
         } else {
             console.log("Creating platform 8")
-            new Platform(8, (xPartition * 2 + config.platform.xCap), ((yPartition * ( yLevel - 3 )) + 2 * config.platform.yCap), config.platform.width, config.platform.height);
+            new Platform(8, getX((xPartition * 1), xPartition), (yPartition * (yLevel - 3)), platformWidth, config.platform.height);
         }
     }
     if (keyIsDown(57) || keyIsDown(105)) {
@@ -259,7 +248,7 @@ function keyPressed() {
             World.remove(world, p);
         } else {
             console.log("Creating platform 9")
-            new Platform(9, (xPartition * 3 + config.platform.xCap), ((yPartition * ( yLevel - 3 )) + 2 * config.platform.yCap), config.platform.width, config.platform.height);
+            new Platform(9, getX((xPartition * 2), xPartition), (yPartition * (yLevel - 3)), platformWidth, config.platform.height);
         }
     }
 }

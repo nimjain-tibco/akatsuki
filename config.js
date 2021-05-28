@@ -8,13 +8,11 @@ const config = {
         width: 80,
         height: 40
     },
-    platform : {
+    platform: {
         yLevel: 3,
         xLevel: 3,
-        width: 400,
         height: 20,
-        yCap: 70,
-        xCap: 25 
+        xMarginFactor: 0.20,
     },
-    debug: false
+    debug: true
 }
