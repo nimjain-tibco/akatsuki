@@ -277,11 +277,6 @@ function isPlatformPresent(i) {
     return;
 }
 
-function getYmaxOpenInCanvas(){
-    return config.canvas.height - car.getHeight();
-}
-
-
 window.addEventListener("resize", function () {
     config.canvas.width = window.innerWidth;
     config.canvas.height = window.innerHeight;
