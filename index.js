@@ -19,9 +19,8 @@ var engine, render, world, runner, ground, car, terrain;
 var viewportCentre, extents, boundsScaleTarget, boundsScale, initialCarPos;
 var wallTop, wallRight, wallBottom, wallLeft;
 var passengersInCar = [];
-var destinationsAvailable = ["Mumbai", "Pune", "Hyderabad", "Chennai", "Bangalore", "Delhi", "Rajasthan", "Kolkata", "Punjab"];
-var destinationsAllocated = [];
-var dropSwitch = false;
+var destinationsAvailable = config.platform.destinations.slice(0);
+var currentPlatform = '';
 
 function setup() {
     setNumPassenger(0);
@@ -84,70 +83,38 @@ function setup() {
         for (var i = 0; i < pair.length; i++) {
             var bodyALabel = pair[i].bodyA.label
             var bodyBLabel = pair[i].bodyB.label
-            var passanger;
-
+            var passanger, platform;
+            // Check collision with car and passenger
             if (bodyALabel.startsWith('passenger')) {
                 passanger = pair[i].bodyA
-            }
-            if (bodyBLabel.startsWith('passenger')) {
+            } else if (bodyBLabel.startsWith('passenger')) {
                 passanger = pair[i].bodyB
             }
-            if (typeof passanger === 'undefined') {
-                continue;
-            }
-            if (passengersInCar.length < 3) {
-                console.log("Number of passengers in car before:", passengersInCar.length)
-                console.log("Adding passenger to car")
-                passengersInCar.push(passanger)
-                setNumPassenger(passengersInCar.length)
-                passanger.isInsideCar = true
-                // passanger.hide()
-                passanger.remove()
-                console.log("Number of passengers in car after:", passengersInCar.length)
-                break;
-            } else {
-                console.log('Taxi full. No more passengers allowed. Please drop existing passengers first')
-            }
-        }
-    });
-
-    Events.on(engine, 'collisionActive', function (event) {
-        if (!dropSwitch || !car.detectCollision(event)) {
-            return;
-        }
-
-        console.log("switch is ONNNNNNNNNNNNNNNNNN");
-        var pair = event.pairs;
-        console.log('collision start with pair count:', pair.length)
-
-        for (var i = 0; i < pair.length; i++) {
-            var bodyALabel = pair[i].bodyA.label
-            var bodyBLabel = pair[i].bodyB.label
-            var platform = null;
-
-            if (bodyALabel.startsWith('platform')) {
-                platform = pair[i].bodyA
-            }
-            if (bodyBLabel.startsWith('platform')) {
-                platform = pair[i].bodyB
-            }
-            if(platform != null && platform.destination != null && platform.destination !== undefined){
-                for(var index = 0; index < passengersInCar.length; index++){
-                    if(platform.destination == passengersInCar[i].destination){
-                        //makeAvailableDestination(platform.destination);
-                        console.log("Number of passengers in car before:", passengersInCar.length)
-                        passengersInCar.splice(i,1)
-                        console.log("FOund Destination " + platform.destination);
-                        setNumPassenger(passengersInCar.length)
-                        platform.destination = null;  
-                        console.log("Number of passengers in car after:", passengersInCar.length)
-                        // reset the switch
-                        dropSwitch = false;
-                        console.log("switch is OFFFFFFFFFFFFFFFF");
-                        break; 
-                    }
+            if (typeof passanger !== 'undefined') {
+                if (passengersInCar.length < 3) {
+                    console.log("Number of passengers in car before:", passengersInCar.length)
+                    console.log("Adding passenger to car")
+                    passengersInCar.push(passanger)
+                    setNumPassenger(passengersInCar.length)
+                    passanger.isInsideCar = true
+                    // passanger.hide()
+                    passanger.remove()
+                    console.log("Number of passengers in car after:", passengersInCar.length)
+                    break;
+                } else {
+                    console.log('Taxi full. No more passengers allowed. Please drop existing passengers first')
                 }
             }
+            // Check collision with car and platform
+            if (bodyALabel.startsWith('platform')) {
+                platform = pair[i].bodyA
+            } else if (bodyBLabel.startsWith('platform')) {
+                platform = pair[i].bodyB
+            }
+            if (typeof platform !== 'undefined') {
+                currentPlatform = platform.location;
+            }
+
         }
     });
 
@@ -173,29 +140,15 @@ function keyPressed() {
     // display passengers upon DOWN_ARROW key press
     if (keyIsDown(DOWN_ARROW)) {
         console.log("Creating new passenger")
-        var randomDestination = getRandomFromList(destinationsAvailable);
-        destinationsAllocated.push(randomDestination);
+        var randomDestination = getRandomDestination();
         new Passenger(car.getPosition().x + random(300, 500), 450, 70, 70, randomDestination);
     }
     // drop passengers upon UP_ARROW key press
     if (keyIsDown(UP_ARROW)) {
-        console.log("Number of passengers in car:", passengersInCar.length)
-        // check if passenger exists and display passeneger on screen for 2 seconds and disappear after wards. 
         if (passengersInCar.length > 0) {
-            console.log("Dropping passenger now")
-            // TODO: change position of existing passenger from car to ground
-            // TODO: also remove the passanger from world
-            // passangersInCar[0].remove()
-            //commented the shift as removing logic is in collisionActive event.
-            //passangersInCar.shift()
-            //setNumPassenger(passengersInCar.length)
-            //toggling switch ON to detect collisionActive event for car and platform 
-            dropSwitch = true;
-            var tempP = new Passenger(car.getPosition().x + random(100, 200), car.getPosition().y, 70, 70, null);
-            tempP.body.label = "droppedPassenger";
-            setTimeout(function () { tempP.body.remove(); }, 1000);
+            dropPassenger()
         } else {
-            console.log('no passengers found in taxi')
+            console.log('No passengers found in car')
         }
     }
 
@@ -209,113 +162,122 @@ function keyPressed() {
     var platformWidth = xPartition - (xPartition * config.platform.xMarginFactor);
 
     if (keyIsDown(49) || keyIsDown(97)) {
-        // platform 1:   on keyPress 1 
-        var p = isPlatformPresent(1);
+        // platform 1:   on keyPress 1
+        var pId = 1;
+        var p = isPlatformPresent(pId);
         if (typeof p !== 'undefined') {
-            //makeAvailableDestination(p.destination); 
             World.remove(world, p);
         } else {
             console.log("Creating platform 1")
-            // var allocatedDestToPassenger = getRandomFromList(destinationsAllocated)
-            new Platform(1, getX((xPartition * 0), xPartition), (yPartition * (yLevel - 1)), platformWidth, config.platform.height, "Kolkata");
+            new Platform(pId, getX((xPartition * 0), xPartition), (yPartition * (yLevel - 1)), platformWidth, config.platform.height, config.platform.destinations[pId - 1]);
         }
     }
     if (keyIsDown(50) || keyIsDown(98)) {
         // platform 2:   on keyPress 2  
-        var p = isPlatformPresent(2);
+        var pId = 2;
+        var p = isPlatformPresent(pId);
         if (typeof p !== 'undefined') {
-            //makeAvailableDestination(p.destination); 
             World.remove(world, p);
         } else {
             console.log("Creating platform 2")
-            // var allocatedDestToPassenger = getRandomFromList(destinationsAllocated)
-            new Platform(2, getX((xPartition * 1), xPartition), (yPartition * (yLevel - 1)), platformWidth, config.platform.height, "Chennai");
+            new Platform(pId, getX((xPartition * 1), xPartition), (yPartition * (yLevel - 1)), platformWidth, config.platform.height, config.platform.destinations[pId - 1]);
         }
     }
     if (keyIsDown(51) || keyIsDown(99)) {
         // platform 3:   on keyPress 3  
-        var p = isPlatformPresent(3);
+        var pId = 3;
+        var p = isPlatformPresent(pId);
         if (typeof p !== 'undefined') {
-            //makeAvailableDestination(p.destination); 
             World.remove(world, p);
         } else {
             console.log("Creating platform 3")
-            // var allocatedDestToPassenger = getRandomFromList(destinationsAllocated)
-            new Platform(3, getX((xPartition * 2), xPartition), (yPartition * (yLevel - 1)), platformWidth, config.platform.height, "Hyderabad");
+            new Platform(pId, getX((xPartition * 2), xPartition), (yPartition * (yLevel - 1)), platformWidth, config.platform.height, config.platform.destinations[pId - 1]);
         }
     }
     if (keyIsDown(52) || keyIsDown(100)) {
         // platform 4:   on keyPress 4
-        var p = isPlatformPresent(4);
+        var pId = 4;
+        var p = isPlatformPresent(pId);
         if (typeof p !== 'undefined') {
-            //makeAvailableDestination(p.destination); 
             World.remove(world, p);
         } else {
             console.log("Creating platform 4")
-            // var allocatedDestToPassenger = getRandomFromList(destinationsAllocated)
-            new Platform(4, getX((xPartition * 0), xPartition), (yPartition * (yLevel - 2)), platformWidth, config.platform.height, "Mumbai");
+            new Platform(pId, getX((xPartition * 0), xPartition), (yPartition * (yLevel - 2)), platformWidth, config.platform.height, config.platform.destinations[pId - 1]);
         }
     }
     if (keyIsDown(53) || keyIsDown(101)) {
         // platform 5:   on keyPress 5
-        var p = isPlatformPresent(5);
+        var pId = 5;
+        var p = isPlatformPresent(pId);
         if (typeof p !== 'undefined') {
-            //makeAvailableDestination(p.destination); 
             World.remove(world, p);
         } else {
             console.log("Creating platform 5")
-            // var allocatedDestToPassenger = getRandomFromList(destinationsAllocated)
-            new Platform(5, getX((xPartition * 1), xPartition), (yPartition * (yLevel - 2)), platformWidth, config.platform.height, "Pune");
+            new Platform(pId, getX((xPartition * 1), xPartition), (yPartition * (yLevel - 2)), platformWidth, config.platform.height, config.platform.destinations[pId - 1]);
         }
     }
     if (keyIsDown(54) || keyIsDown(102)) {
         // platform 6:   on keyPress 6
-        var p = isPlatformPresent(6);
+        var pId = 6;
+        var p = isPlatformPresent(pId);
         if (typeof p !== 'undefined') {
-            //makeAvailableDestination(p.destination); 
             World.remove(world, p);
         } else {
             console.log("Creating platform 6")
-            // var allocatedDestToPassenger = getRandomFromList(destinationsAllocated)
-            new Platform(6, getX((xPartition * 2), xPartition), (yPartition * (yLevel - 2)), platformWidth, config.platform.height, "Bangalore");
+            new Platform(pId, getX((xPartition * 2), xPartition), (yPartition * (yLevel - 2)), platformWidth, config.platform.height, config.platform.destinations[pId - 1]);
         }
     }
     if (keyIsDown(55) || keyIsDown(103)) {
         // platform 7:   on keyPress 7
-        var p = isPlatformPresent(7);
+        var pId = 7;
+        var p = isPlatformPresent(pId);
         if (typeof p !== 'undefined') {
-            //makeAvailableDestination(p.destination); 
             World.remove(world, p);
         } else {
             console.log("Creating platform 7")
-            // var allocatedDestToPassenger = getRandomFromList(destinationsAllocated)
-            new Platform(7, getX((xPartition * 0), xPartition), (yPartition * (yLevel - 3)), platformWidth, config.platform.height, "Rajasthan");
+            new Platform(pId, getX((xPartition * 0), xPartition), (yPartition * (yLevel - 3)), platformWidth, config.platform.height, config.platform.destinations[pId - 1]);
         }
     }
     if (keyIsDown(56) || keyIsDown(104)) {
         // platform 8:   on keyPress 8
-        var p = isPlatformPresent(8);
+        var pId = 8;
+        var p = isPlatformPresent(pId);
         if (typeof p !== 'undefined') {
-            //makeAvailableDestination(p.destination); 
             World.remove(world, p);
         } else {
             console.log("Creating platform 8")
-            // var allocatedDestToPassenger = getRandomFromList(destinationsAllocated)
-            new Platform(8, getX((xPartition * 1), xPartition), (yPartition * (yLevel - 3)), platformWidth, config.platform.height, "Delhi");
+            new Platform(pId, getX((xPartition * 1), xPartition), (yPartition * (yLevel - 3)), platformWidth, config.platform.height, config.platform.destinations[pId - 1]);
         }
     }
     if (keyIsDown(57) || keyIsDown(105)) {
         // platform 9:   on keyPress 9
-        var p = isPlatformPresent(9);
+        var pId = 9;
+        var p = isPlatformPresent(pId);
         if (typeof p !== 'undefined') {
-            //makeAvailableDestination(p.destination); 
             World.remove(world, p);
         } else {
             console.log("Creating platform 9")
-            // var allocatedDestToPassenger = getRandomFromList(destinationsAllocated)
-            new Platform(9, getX((xPartition * 2), xPartition), (yPartition * (yLevel - 3)), platformWidth, config.platform.height, "Punjab");
+            new Platform(pId, getX((xPartition * 2), xPartition), (yPartition * (yLevel - 3)), platformWidth, config.platform.height, config.platform.destinations[pId - 1]);
         }
     }
+}
+
+function dropPassenger() {
+    for (var i = 0; i < passengersInCar.length; i++) {
+        if (currentPlatform == passengersInCar[i].destination) {
+            console.log("Dropping passenger now");
+            console.log("Number of passengers in car before:", passengersInCar.length)
+            passengersInCar.splice(i, 1)
+            console.log("Found platform with location:", currentPlatform);
+            var tempP = new Passenger(car.getPosition().x + random(100, 200), car.getPosition().y, 70, 70, null);
+            tempP.body.label = "droppedPassenger";
+            setTimeout(function () { tempP.body.remove(); }, 1000);
+            setNumPassenger(passengersInCar.length)
+            console.log("Number of passengers in car after:", passengersInCar.length)
+            return;
+        }
+    }
+    console.log("No passenger in car wants to drop here!")
 }
 
 function getX(x, width) {
@@ -331,21 +293,20 @@ function isPlatformPresent(i) {
     return;
 }
 
-function getRandomFromList(list){
-    var index = Math.floor(Math.random() * list.length);
-    return list.splice(index, 1)[0];
+function getRandomDestination() {
+    var index = random(destinationsAvailable.length);
+    return destinationsAvailable.splice(index, 1)[0];
 }
 
-function makeAvailableDestination(dest){
-    var index = destinationsAllocated.indexOf(dest);
-    if (index !== -1) {
-        destinationsAllocated.splice(index, 1);
-        var indexAva = destinationsAvailable.indexOf(dest)
-        if(indexAva !== -1)
-            destinationsAvailable.push(dest);
-    }
-
-}
+// function makeAvailableDestination(dest){
+//     var index = destinationsAllocated.indexOf(dest);
+//     if (index !== -1) {
+//         destinationsAllocated.splice(index, 1);
+//         var indexAva = destinationsAvailable.indexOf(dest)
+//         if(indexAva !== -1)
+//             destinationsAvailable.push(dest);
+//     }
+// }
 
 window.addEventListener("resize", function () {
     config.canvas.width = window.innerWidth;
