@@ -21,9 +21,9 @@ var wallTop, wallRight, wallBottom, wallLeft;
 var passengersInCar = [];
 var destinationsAvailable = config.platform.destinations.slice(0);
 var currentPlatform = '';
-
+var passengerId = 1;
+var leftScorecard = new LeftScorecard(), rightScorecard = new RightScorecard();
 function setup() {
-    setNumPassenger(0);
     noCanvas();
     config.canvas.width = windowWidth - config.canvas.margin;
     config.canvas.height = windowHeight - config.canvas.margin;
@@ -65,7 +65,7 @@ function setup() {
     wallLeft = new Wall(0 - (wallThikness / 2), (screenHeight / 2), wallThikness, screenHeight);
 
     initialCarPos = { x: getX(100, 200), y: (config.canvas.height * 0.1) };
-    car = new Car(initialCarPos.x, initialCarPos.y, 200, config.car.width, config.car.height);
+    car = new Car(initialCarPos.x, initialCarPos.y, 200, config.car.width, config.car.height,0,0);
 
     // initialCarPos = Vector.magnitude(Vector.sub(car.getPosition(), viewportCentre))
     // fit the render viewport to the scene
@@ -95,8 +95,9 @@ function setup() {
                     console.log("Number of passengers in car before:", passengersInCar.length)
                     console.log("Adding passenger to car")
                     passengersInCar.push(passanger)
-                    setNumPassenger(passengersInCar.length)
-                    passanger.isInsideCar = true
+                    rightScorecard.pickPassenger()
+                    passanger.isInsideCar = true;
+                    updatePassengers(2,3);
                     // passanger.hide()
                     passanger.remove()
                     console.log("Number of passengers in car after:", passengersInCar.length)
@@ -124,7 +125,6 @@ function setup() {
 
 function draw() {
     background(0);
-    text("Hello", 100, 100, 70, 80);
     if (keyIsDown(LEFT_ARROW)) {
         car.move("LEFT")
     }
@@ -134,6 +134,11 @@ function draw() {
     if (keyIsDown(32)) {
         car.move("JUMP")
     }
+    if (frameCount % 60 == 0) {
+        leftScorecard.update();
+        leftScorecard.show();
+        rightScorecard.show()
+    }
 }
 
 function keyPressed() {
@@ -141,7 +146,8 @@ function keyPressed() {
     if (keyIsDown(DOWN_ARROW)) {
         console.log("Creating new passenger")
         var randomDestination = getRandomDestination();
-        new Passenger(car.getPosition().x + random(300, 500), 450, 70, 70, randomDestination);
+        new Passenger(passengerId, car.getPosition().x + random(300, 500), 450, 70, 70, randomDestination);
+
     }
     // drop passengers upon UP_ARROW key press
     if (keyIsDown(UP_ARROW)) {
@@ -267,12 +273,12 @@ function dropPassenger() {
         if (currentPlatform == passengersInCar[i].destination) {
             console.log("Dropping passenger now");
             console.log("Number of passengers in car before:", passengersInCar.length)
+            rightScorecard.updatePassengerDropped(passengersInCar[i]);
             passengersInCar.splice(i, 1)
             console.log("Found platform with location:", currentPlatform);
             var dummyPassenger = new Passenger(car.getPosition().x + random(100, 200), car.getPosition().y, 70, 70, null);
             dummyPassenger.body.label = "droppedPassenger";
             setTimeout(function () { dummyPassenger.body.remove(); }, 1000);
-            setNumPassenger(passengersInCar.length)
             console.log("Number of passengers in car after:", passengersInCar.length)
             return;
         }
@@ -280,6 +286,16 @@ function dropPassenger() {
     console.log("No passenger in car wants to drop here!")
 }
 
+function updatePassengers(p1,p2){
+    var currentCarPosition= car.getPosition();
+    car.removeCar();
+    var tmpCar=new Car(currentCarPosition.x, currentCarPosition.y, 280, 60, 30,p1,p2);
+    Matter.Body.setAngle(tmpCar.body,car.body.angle)
+    Matter.Body.setAngle(tmpCar.wheelA,car.wheelA.angle)
+    Matter.Body.setAngle(tmpCar.wheelB,car.wheelB.angle)
+    Matter.Body.applyForce(tmpCar.body, currentCarPosition, car.body.force)
+    car= tmpCar;
+}
 function getX(x, width) {
     return x + (width * 0.5);
 }
