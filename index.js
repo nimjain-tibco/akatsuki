@@ -21,9 +21,9 @@ var wallTop, wallRight, wallBottom, wallLeft;
 var passengersInCar = [];
 var destinationsAvailable = config.platform.destinations.slice(0);
 var currentPlatform = '';
-
+var passengerId = 1;
+var leftScorecard = new LeftScorecard(), rightScorecard = new RightScorecard();
 function setup() {
-    setNumPassenger(0);
     noCanvas();
     config.canvas.width = windowWidth - config.canvas.margin;
     config.canvas.height = windowHeight - config.canvas.margin;
@@ -95,7 +95,7 @@ function setup() {
                     console.log("Number of passengers in car before:", passengersInCar.length)
                     console.log("Adding passenger to car")
                     passengersInCar.push(passanger)
-                    setNumPassenger(passengersInCar.length)
+                    rightScorecard.pickPassenger()
                     passanger.isInsideCar = true
                     // passanger.hide()
                     passanger.remove()
@@ -124,7 +124,6 @@ function setup() {
 
 function draw() {
     background(0);
-    text("Hello", 100, 100, 70, 80);
     if (keyIsDown(LEFT_ARROW)) {
         car.move("LEFT")
     }
@@ -134,6 +133,11 @@ function draw() {
     if (keyIsDown(32)) {
         car.move("JUMP")
     }
+    if (frameCount % 60 == 0) {
+        leftScorecard.update();
+        leftScorecard.show();
+        rightScorecard.show()
+    }
 }
 
 function keyPressed() {
@@ -141,7 +145,8 @@ function keyPressed() {
     if (keyIsDown(DOWN_ARROW)) {
         console.log("Creating new passenger")
         var randomDestination = getRandomDestination();
-        new Passenger(car.getPosition().x + random(300, 500), 450, 70, 70, randomDestination);
+        new Passenger(passengerId, car.getPosition().x + random(300, 500), 450, 70, 70, randomDestination);
+
     }
     // drop passengers upon UP_ARROW key press
     if (keyIsDown(UP_ARROW)) {
@@ -267,12 +272,12 @@ function dropPassenger() {
         if (currentPlatform == passengersInCar[i].destination) {
             console.log("Dropping passenger now");
             console.log("Number of passengers in car before:", passengersInCar.length)
+            rightScorecard.updatePassengerDropped(passengersInCar[i]);
             passengersInCar.splice(i, 1)
             console.log("Found platform with location:", currentPlatform);
-            var tempP = new Passenger(car.getPosition().x + random(100, 200), car.getPosition().y, 70, 70, null);
+            var tempP = new Passenger(0, car.getPosition().x + random(100, 200), car.getPosition().y, 70, 70, null);
             tempP.body.label = "droppedPassenger";
             setTimeout(function () { tempP.body.remove(); }, 1000);
-            setNumPassenger(passengersInCar.length)
             console.log("Number of passengers in car after:", passengersInCar.length)
             return;
         }
