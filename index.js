@@ -65,7 +65,7 @@ function setup() {
     wallLeft = new Wall(0 - (wallThikness / 2), (screenHeight / 2), wallThikness, screenHeight);
 
     initialCarPos = { x: getX(100, 200), y: (config.canvas.height * 0.1) };
-    car = new Car(initialCarPos.x, initialCarPos.y, 200, config.car.width, config.car.height);
+    car = new Car(initialCarPos.x, initialCarPos.y, 200, config.car.width, config.car.height,0,0);
 
     // initialCarPos = Vector.magnitude(Vector.sub(car.getPosition(), viewportCentre))
     // fit the render viewport to the scene
@@ -96,7 +96,8 @@ function setup() {
                     console.log("Adding passenger to car")
                     passengersInCar.push(passanger)
                     rightScorecard.pickPassenger()
-                    passanger.isInsideCar = true
+                    passanger.isInsideCar = true;
+                    updatePassengers(2,3);
                     // passanger.hide()
                     passanger.remove()
                     console.log("Number of passengers in car after:", passengersInCar.length)
@@ -285,6 +286,16 @@ function dropPassenger() {
     console.log("No passenger in car wants to drop here!")
 }
 
+function updatePassengers(p1,p2){
+    var currentCarPosition= car.getPosition();
+    car.removeCar();
+    var tmpCar=new Car(currentCarPosition.x, currentCarPosition.y, 280, 60, 30,p1,p2);
+    Matter.Body.setAngle(tmpCar.body,car.body.angle)
+    Matter.Body.setAngle(tmpCar.wheelA,car.wheelA.angle)
+    Matter.Body.setAngle(tmpCar.wheelB,car.wheelB.angle)
+    Matter.Body.applyForce(tmpCar.body, currentCarPosition, car.body.force)
+    car= tmpCar;
+}
 function getX(x, width) {
     return x + (width * 0.5);
 }
