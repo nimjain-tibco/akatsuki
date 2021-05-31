@@ -5,8 +5,21 @@ const config = {
         margin: 0
     },
     car: {
-        width: 80,
-        height: 40
+        width: 280,
+        height: 60,
+        wheelRadius: 30,
+        maxVelocity: 5,
+        seats: {
+            yOffset: 60,
+            w: 70,
+            h: 60
+        },
+        frontSeat: {
+            xOffset: -10
+        },
+        backSeat: {
+            xOffset: -77
+        }
     },
     platform: {
         yLevel: 3,
@@ -15,5 +28,5 @@ const config = {
         xMarginFactor: 0.20,
         destinations: ["Bangalore", "Hyderabad", "Chennai", "Mumbai", "Pune", "Kolkata", "Rajasthan", "Delhi", "Punjab"]
     },
-    debug: true
+    debug: false
 }

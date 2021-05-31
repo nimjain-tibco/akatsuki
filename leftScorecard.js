@@ -4,10 +4,10 @@ class LeftScorecard {
 
     update() {
         for (var i = 0; i < passengersInCar.length; i++) {
-            passengersInCar[i].patience -= 5;
+            passengersInCar[i].patience -= 0.5;
             if (passengersInCar[i].patience <= 0) {
                 console.log("Game Over")
-                noLoop();
+                // noLoop();
             }
         }
     }
