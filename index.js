@@ -276,9 +276,9 @@ function dropPassenger() {
             rightScorecard.updatePassengerDropped(passengersInCar[i]);
             passengersInCar.splice(i, 1)
             console.log("Found platform with location:", currentPlatform);
-            var tempP = new Passenger(0, car.getPosition().x + random(100, 200), car.getPosition().y, 70, 70, null);
-            tempP.body.label = "droppedPassenger";
-            setTimeout(function () { tempP.body.remove(); }, 1000);
+            var dummyPassenger = new Passenger(car.getPosition().x + random(100, 200), car.getPosition().y, 70, 70, null);
+            dummyPassenger.body.label = "droppedPassenger";
+            setTimeout(function () { dummyPassenger.body.remove(); }, 1000);
             console.log("Number of passengers in car after:", passengersInCar.length)
             return;
         }
@@ -313,16 +313,6 @@ function getRandomDestination() {
     var index = random(destinationsAvailable.length);
     return destinationsAvailable.splice(index, 1)[0];
 }
-
-// function makeAvailableDestination(dest){
-//     var index = destinationsAllocated.indexOf(dest);
-//     if (index !== -1) {
-//         destinationsAllocated.splice(index, 1);
-//         var indexAva = destinationsAvailable.indexOf(dest)
-//         if(indexAva !== -1)
-//             destinationsAvailable.push(dest);
-//     }
-// }
 
 window.addEventListener("resize", function () {
     config.canvas.width = window.innerWidth;
