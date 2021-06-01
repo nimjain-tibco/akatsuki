@@ -51,27 +51,35 @@ class Car {
             },
             density: 0.0001
         };
-        frontSeat = Bodies.rectangle(xx + frontSeatXOffset, yy - seatsYOffset, config.car.seats.w, config.car.seats.h, optsSeatHidden);
         if (this.passenger1Id > 0) {
-            frontSeat.render = {
-                visible: true,
-                sprite: {
-                    texture: 'images/f' + this.passenger1Id + '.png',
-                    xScale: 0.3,
-                    yScale: 0.3,
-                }
-            }
+            frontSeat = Bodies.rectangle(xx + frontSeatXOffset, yy - seatsYOffset, config.car.seats.w, config.car.seats.h, {
+                render: {
+                    visible: true,
+                    sprite: {
+                        texture: 'images/f' + max(1, this.passenger1Id % 9) + '.png',
+                        xScale: 0.3,
+                        yScale: 0.3,
+                    },
+                },
+                density: 0.0001
+            })
+        } else {
+            frontSeat = Bodies.rectangle(xx + frontSeatXOffset, yy - seatsYOffset, config.car.seats.w, config.car.seats.h, optsSeatHidden);
         }
-        backSeat = Bodies.rectangle(xx + backSeatXOffset, yy - seatsYOffset, config.car.seats.w, config.car.seats.h, optsSeatHidden);
         if (this.passenger2Id > 0) {
-            backSeat.render = {
-                visible: true,
-                sprite: {
-                    texture: 'images/f' + this.passenger2Id + '.png',
-                    xScale: 0.3,
-                    yScale: 0.3,
-                }
-            }
+            backSeat = Bodies.rectangle(xx + backSeatXOffset, yy - seatsYOffset, config.car.seats.w, config.car.seats.h, {
+                render: {
+                    visible: true,
+                    sprite: {
+                        texture: 'images/f' + max(1, this.passenger2Id % 9) + '.png',
+                        xScale: 0.3,
+                        yScale: 0.3,
+                    }
+                },
+                density: 0.0001
+            });
+        } else {
+            backSeat = Bodies.rectangle(xx + backSeatXOffset, yy - seatsYOffset, config.car.seats.w, config.car.seats.h, optsSeatHidden);
         }
         this.body.label = 'car-body';
         frontSeat.label = 'car-frontSeat';

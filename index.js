@@ -148,8 +148,13 @@ function keyPressed() {
     if (keyIsDown(DOWN_ARROW)) {
         console.log("Creating new passenger")
         var randomDestination = getRandomDestination();
-        new Passenger(passengerId, car.getPosition().x + random(300, 500), 450, 70, 70, randomDestination);
-
+        var carX = car.getPosition().x;
+        console.log("carX", carX)
+        if (carX > config.canvas.width * 0.7)
+            new Passenger(passengerId, carX - random(300, 500), 450, config.passenger.w, config.passenger.h, randomDestination);
+        else
+            new Passenger(passengerId, carX + random(300, 500), 450, config.passenger.w, config.passenger.h, randomDestination);
+        passengerId += 1;
     }
     // drop passengers upon UP_ARROW key press
     if (keyIsDown(UP_ARROW)) {
@@ -277,10 +282,10 @@ function dropPassenger() {
             console.log("Number of passengers in car before:", passengersInCar.length)
             rightScorecard.updatePassengerDropped(passengersInCar[i]);
             car.dropPassenger(passengersInCar[i]);
+            var dummyPassenger = new Passenger(passengersInCar[i].passengerId, car.getPosition().x + random(200, 300), car.getPosition().y, config.passenger.w, config.passenger.h, passengersInCar[i].destination);
+            dummyPassenger.body.label = "droppedPassenger";
             passengersInCar.splice(i, 1)
             console.log("Found platform with location:", currentPlatform);
-            var dummyPassenger = new Passenger(car.getPosition().x + random(100, 200), car.getPosition().y, 70, 70, null);
-            dummyPassenger.body.label = "droppedPassenger";
             setTimeout(function () { dummyPassenger.body.remove(); }, 1000);
             console.log("Number of passengers in car after:", passengersInCar.length)
             return;

@@ -4,12 +4,12 @@ class Passenger {
         this.y = y;
         this.w = w;
         this.h = h;
-        this.body = Bodies.rectangle(x,y,w,h, {
+        this.body = Bodies.rectangle(x, y, w, h, {
             render: {
                 sprite: {
-                    texture: 'images/p'+id+'.png',
-                    xScale: 0.7,
-                    yScale: 0.7,
+                    texture: 'images/p' + max(1, id % 9) + '.png',
+                    xScale: 0.6,
+                    yScale: 0.6,
                 }
             }
         });
@@ -25,7 +25,6 @@ class Passenger {
             World.remove(world, this)
         }
         Composite.add(world, this.body);
-        passengerId += 1;
     }
 }
 
