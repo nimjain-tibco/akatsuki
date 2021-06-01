@@ -26,7 +26,11 @@ const config = {
         xLevel: 3,
         height: 20,
         xMarginFactor: 0.20,
-        destinations: ["Bangalore", "Hyderabad", "Chennai", "Mumbai", "Pune", "Kolkata", "Rajasthan", "Delhi", "Punjab"]
+        destinations: ["Bangalore", "Hyderabad", "Chennai", "Mumbai", "Pune", "Kolkata", "Jaipur", "Delhi", "Gangtok"]
+    },
+    passenger: {
+        w: 70,
+        h: 150
     },
     debug: false
 }
