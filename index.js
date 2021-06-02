@@ -15,7 +15,7 @@ var Engine = Matter.Engine,
     Events = Matter.Events,
     Bodies = Matter.Bodies;
 
-var engine, render, world, runner, ground, car, terrain;
+var engine, render, world, runner, car, terrain;
 var viewportCentre, extents, boundsScaleTarget, boundsScale, initialCarPos;
 var wallTop, wallRight, wallBottom, wallLeft;
 var passengersInCar = [];
@@ -79,7 +79,7 @@ function setup() {
             return;
         }
         var pair = event.pairs;
-        console.log('collision start with pair count:', pair.length)
+        console.log('Collision start with pair count:', pair.length)
         for (var i = 0; i < pair.length; i++) {
             var bodyALabel = pair[i].bodyA.label
             var bodyBLabel = pair[i].bodyB.label
@@ -149,7 +149,6 @@ function keyPressed() {
         console.log("Creating new passenger")
         var randomDestination = getRandomDestination();
         var carX = car.getPosition().x;
-        console.log("carX", carX)
         if (carX > config.canvas.width * 0.7)
             new Passenger(passengerId, carX - random(300, 500), 450, config.passenger.w, config.passenger.h, randomDestination);
         else

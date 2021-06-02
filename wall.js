@@ -5,7 +5,8 @@ class Wall {
         this.w = w;
         this.h = h;
         var options = {
-            isStatic: true
+            isStatic: true,
+            render: { fillStyle: '#2d3436' }
         }
         this.body = Bodies.rectangle(x, y, w, h, options);
         this.body.label = 'ground';

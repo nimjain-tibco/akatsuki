@@ -194,7 +194,6 @@ class Car {
             console.log("Cannot fit more than 2 passengers in Car!");
             return
         }
-        console.log("p1: %i, p2: %i, pId: %i", this.passenger1Id, this.passenger2Id, passenger.passengerId)
         var tempCar;
         this.remove();
         if (this.passenger2Id == 0) {
